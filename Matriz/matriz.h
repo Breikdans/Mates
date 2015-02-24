@@ -13,7 +13,7 @@ class CMatriz : public CArray
 {
 	private:
 	public:
-		CMatriz(unsigned int uiFilas = 1, unsigned int iCols = 1);
+		CMatriz(unsigned int uiFilas = 1, unsigned int uiCols = 1);
 		CMatriz(const CMatriz&);
 		CMatriz& operator=(const CMatriz&);
 		CMatriz operator+(const CMatriz&) const;
@@ -23,6 +23,7 @@ class CMatriz : public CArray
 		void Visualizar(void) const;
 		void AsignarValores(void);
 		CMatriz Traspuesta(void) const;
+		CMatriz Menor(unsigned int, unsigned int);
 };
 
 #endif

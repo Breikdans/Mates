@@ -120,10 +120,9 @@ CMatriz CMatriz::operator/(const CMatriz& M) const
 // Asigna todos los valores de la Matriz
 void CMatriz::AsignarValores(void)
 {
-	int dims = getDimensiones();
 	const int *p_Dims = getTblDimensiones();
 	// comprobamos que haya algo en la Matriz
-	if (dims > 0)
+	if (p_Dims[FILAS] > 0)
 	{
 		system("cls");
 		cout << "Matriz de " << p_Dims[FILAS] << " filas X " << p_Dims[COLUMNAS] << " Columnas" << endl;
@@ -142,10 +141,9 @@ void CMatriz::AsignarValores(void)
 
 void CMatriz::Visualizar() const
 {
-	int dims = getDimensiones();
 	const int *p_Dims = getTblDimensiones();
 	// comprobamos que haya algo en la Matriz
-	if (dims > 0)
+	if (p_Dims[FILAS] > 0)
 	{
 		system("cls");
 		cout << "Matriz: filas " << p_Dims[FILAS] << " X " << p_Dims[COLUMNAS] << " columnas" << endl;
@@ -177,5 +175,76 @@ CMatriz CMatriz::Traspuesta() const
 			M.AsignarDato(ObtenerDato(i, j), j, i);	// Cogemos por columna y asignamos por fila
 	}
 
+	return M;
+}
+
+
+// Dada la posicion de un termino de una matriz, el MENOR es el resto de terminos, exceptuando la fila y columna dada:
+/*
+Teniendo la matriz A:
+	2	3	8
+	7	8	9
+	2	0	1
+
+El Menor del termino de A12(termino 7) seria:
+	X	3	8
+	X	X	X
+	X	0	1
+O sea:
+		3	8
+		0	1
+*/
+CMatriz CMatriz::Menor(unsigned int f, unsigned int c)
+{
+	int tot_filas_menor = 0, tot_cols_menor = 0;
+	int men_fil = 0, men_col = 0;
+	// Primero comprobamos que nos han pasado una posicion valida
+	const int *p_Dims = getTblDimensiones();
+	if ( (f == 0 || f > p_Dims[FILAS]) || 
+		 (c == 0 || c > p_Dims[COLUMNAS]) )
+	{
+		cerr << "Dimensiones invalidas!: Filas=" << f << " Columnas=" << c << endl;
+		exit(-1);
+	}
+
+	// La matriz resultado sera de m filas - 1 * p columnas - 1
+	tot_filas_menor = p_Dims[FILAS] - 1;
+	tot_cols_menor = p_Dims[COLUMNAS] - 1;
+
+	CMatriz M(tot_filas_menor, tot_cols_menor);
+
+	for (int j = 0; j < p_Dims[FILAS]; j++)
+	{
+		// si la FILA es DISTINTA a la FILA del TERMINO
+		if (j != f-1)
+		{
+			for (int i = 0; i < p_Dims[COLUMNAS]; i++)
+			{
+				// si la COLUMNA es DISTINTA a la COLUMNA del TERMINO
+				if (i != c-1)
+				{
+					// AHORA comprobamos si la FILA de la matriz donde guardamos el MENOR está llena
+					if (men_fil < tot_filas_menor)
+					{
+						double dato = ObtenerDato(p_Dims[i], p_Dims[j]);
+						M.AsignarDato(dato, men_fil, men_col);
+						++men_fil;
+					}
+					else
+					{
+						// AHORA comprobamos si la COLUMNA de la matriz donde guardamos el MENOR está llena
+						if (men_col < tot_cols_menor)
+						{
+							M.AsignarDato(this->ObtenerDato(p_Dims[i], p_Dims[j]), men_fil, men_col);
+							++men_col;
+						}
+						else
+							break;
+
+					}
+				}
+			}
+		}
+	}
 	return M;
 }
